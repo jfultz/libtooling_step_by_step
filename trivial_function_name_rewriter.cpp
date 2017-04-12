@@ -70,6 +70,6 @@ int main(int argc, const char **argv)
 	// to retrieve CompilationDatabase and the list of input file paths.
 
 	ClangTool Tool(OptionsParser.getCompilations(), OptionsParser.getSourcePathList());
-	int result = Tool.run(newFrontendActionFactory<FunctionDeclFrontendAction>().get());
+	return Tool.run(newFrontendActionFactory<FunctionDeclFrontendAction>().get());
 }
 

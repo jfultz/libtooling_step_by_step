@@ -20,7 +20,8 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 ############################################################
 
 set(LIBRARY_LIST clangFrontend  clangSerialization clangDriver clangParse clangRewriteFrontend clangStaticAnalyzerFrontend clangSema)
-set(LIBRARY_LIST ${LIBRARY_LIST} clangAnalysis clangEdit clangAST clangLex clangBasic clangTooling clangRewrite )
+set(LIBRARY_LIST ${LIBRARY_LIST} clangAnalysis clangEdit clangAST clangLex clangBasic clangTooling
+      clangRewrite clangASTMatchers clangToolingCore)
 set(COMPONENT_LIST mcparser bitreader support mc option)
 
 ############################################################
@@ -47,9 +48,11 @@ add_definitions(
 add_executable(simple_print_ast simple_print_ast.cpp)
 add_executable(print_local_function_decls print_local_function_decls.cpp)
 add_executable(trivial_function_name_rewriter trivial_function_name_rewriter.cpp)
+add_executable(replace_for_pattern replace_for_pattern.cpp)
 
 foreach(exec_name
-            simple_print_ast print_local_function_decls trivial_function_name_rewriter)
+            simple_print_ast print_local_function_decls trivial_function_name_rewriter
+            replace_for_pattern)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     foreach(link_lib IN LISTS LIBRARY_LIST)
       target_link_libraries(${exec_name} optimized ${link_lib})

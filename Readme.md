@@ -18,6 +18,11 @@ export CPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.
 Information seems to be spread around, and Stack Overflow has some useful stuff, but often falls surprisingly short in concrete examples.  Here are some websites that helped me put this repo together.
 * [clang doxygen docs](https://clang.llvm.org/doxygen/index.html).  Any nontrivial usage requires using this as a reference.  Fortunately, it's well-linked to the source code because, sometimes, it's required to understand the documentation (sadly). However, doxygen's insistence on hiding all of the useful classes behind a closed namespace subtree, and then continuing to re-close it every time you hit the back button is absolutely evil.
 * [Official clang docs to use clang as a library](http://clang.llvm.org/docs/index.html#using-clang-as-a-library).  This is great when you're starting from nothing, but it leaves oh-so-many questions unanswered.
+* [Official clang docs matcher reference](https://clang.llvm.org/docs/LibASTMatchersReference.html).  Valuable breakout of just the various matcher APIs.
 * [Bites, Bytes, Boos blog post](https://kevinaboos.wordpress.com/2013/07/23/clang-tutorial-part-ii-libtooling-example/), which has a nice example of an AST visitor and rewriting.  [Code here](https://github.com/kevinaboos/LibToolingExample).  He also talks about clang plugins.
 * [It's Compiling blog post](https://heejune.me/2016/08/17/build-your-own-clang-example-outside-of-the-llvm-source-tree/
 ).  It is amazingly tough to build libTooling code outside of the clang build system.  The documentation for this is basically nonexistent.  Unfortunately, I didn't notice this post until I'd largely reverse-engineered it myself, but the post did help me to clean up some of my messy, ignorant cmake.
+
+### Additional info:
+* To get an AST dump, do:
+    clang++ -Xclang -ast-dump -fsyntax-only filename.cpp
