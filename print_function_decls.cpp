@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
@@ -12,33 +13,42 @@ static llvm::cl::OptionCategory MyToolCategory("print_function_decls options");
 
 class FunctionDeclASTVisitor : public clang::RecursiveASTVisitor<FunctionDeclASTVisitor>
 {
+private:
+	clang::SourceManager& sourceManager_;
+
 public:
-	virtual bool VisitFunctionDecl(clang::FunctionDecl *func)
+	explicit FunctionDeclASTVisitor(clang::SourceManager& sm)
+		: sourceManager_(sm)
+	{ }
+
+	virtual bool VisitFunctionDecl(clang::FunctionDecl* func)
 	{
-		std::cout << func->getNameInfo().getName().getAsString() << std::endl;
+		if (sourceManager_.isInMainFile(func->getSourceRange().getBegin()))
+			std::cout << func->getNameInfo().getName().getAsString() << std::endl;
 		return true;
 	}
 };
 
 class FunctionDeclASTConsumer : public clang::ASTConsumer {
 private:
-	FunctionDeclASTVisitor visitor; // doesn't have to be private
+	FunctionDeclASTVisitor visitor_; // doesn't have to be private
 
 public:
 	// override the constructor in order to pass CI
-	explicit FunctionDeclASTConsumer()
+	explicit FunctionDeclASTConsumer(clang::CompilerInstance& ci)
+		: visitor_(ci.getSourceManager())
 	{ }
  
-	virtual void HandleTranslationUnit(clang::ASTContext &Context)
+	virtual void HandleTranslationUnit(clang::ASTContext& Context)
 	{
-		visitor.TraverseDecl(Context.getTranslationUnitDecl());
+		visitor_.TraverseDecl(Context.getTranslationUnitDecl());
 	}
 };
 
 class FunctionDeclFrontendAction : public clang::ASTFrontendAction {
 public:
-    virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance &CI, clang::StringRef file) {
-        return std::make_unique<FunctionDeclASTConsumer>(); // pass CI pointer to ASTConsumer
+    virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& CI, clang::StringRef file) {
+        return std::make_unique<FunctionDeclASTConsumer>(CI); // pass CI pointer to ASTConsumer
     }
 };
 
