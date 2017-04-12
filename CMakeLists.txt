@@ -17,8 +17,6 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 #   setting Project informations
 ############################################################
 
-set(PROJECT_NAME example)
-
 set(LIBRARY_LIST clangFrontend  clangSerialization clangDriver clangParse clangRewriteFrontend clangStaticAnalyzerFrontend clangSema)
 set(LIBRARY_LIST ${LIBRARY_LIST} clangAnalysis clangEdit clangAST clangLex clangBasic clangTooling )
 set(COMPONENT_LIST mcparser bitreader support mc option)
@@ -44,41 +42,44 @@ add_definitions(
 -D__STDC_CONSTANT_MACROS
 )
 
+add_executable(simple_print_ast simple_print_ast.cpp)
 add_executable(print_function_decls print_function_decls.cpp)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  foreach(link_lib IN LISTS LIBRARY_LIST)
-    target_link_libraries(print_function_decls optimized ${link_lib})
-    target_link_libraries(print_function_decls debug     ${link_lib}d)
-  endforeach()
-else()
-  target_link_libraries(print_function_decls ${LIBRARY_LIST})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-unused-parameter -fno-strict-aliasing -fno-exceptions -fno-rtti")
-  #set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
-endif()
+foreach(exec_name simple_print_ast print_function_decls)
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    foreach(link_lib IN LISTS LIBRARY_LIST)
+      target_link_libraries(${exec_name} optimized ${link_lib})
+      target_link_libraries(${exec_name} debug     ${link_lib}d)
+    endforeach()
+  else()
+    target_link_libraries(${exec_name} ${LIBRARY_LIST})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-unused-parameter -fno-strict-aliasing -fno-exceptions -fno-rtti")
+    #set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
+  endif()
 
-#llvm_map_components_to_libnames(llvm_libs ${COMPONENT_LIST})
-#target_link_libraries(print_function_decls ${llvm_libs})
-target_link_libraries(print_function_decls
-  LLVMX86AsmParser # MC, MCParser, Support, X86Desc, X86Info
-  LLVMX86Desc # MC, Support, X86AsmPrinter, X86Info
-  LLVMX86AsmPrinter # MC, Support, X86Utils
-  LLVMX86Info # MC, Support, Target
-  LLVMX86Utils # Core, Support
-  LLVMipo
-  LLVMScalarOpts
-  LLVMInstCombine
-  LLVMTransformUtils
-  LLVMAnalysis
-  LLVMTarget
-  LLVMOption # Support
-  LLVMMCParser # MC, Support
-  LLVMMC # Object, Support
-  LLVMObject # BitReader, Core, Support
-  LLVMBitReader # Core, Support
-  LLVMCore # Support
-  LLVMSupport
-)
+  #llvm_map_components_to_libnames(llvm_libs ${COMPONENT_LIST})
+  #target_link_libraries(${exec_name} ${llvm_libs})
+  target_link_libraries(${exec_name}
+    LLVMX86AsmParser # MC, MCParser, Support, X86Desc, X86Info
+    LLVMX86Desc # MC, Support, X86AsmPrinter, X86Info
+    LLVMX86AsmPrinter # MC, Support, X86Utils
+    LLVMX86Info # MC, Support, Target
+    LLVMX86Utils # Core, Support
+    LLVMipo
+    LLVMScalarOpts
+    LLVMInstCombine
+    LLVMTransformUtils
+    LLVMAnalysis
+    LLVMTarget
+    LLVMOption # Support
+    LLVMMCParser # MC, Support
+    LLVMMC # Object, Support
+    LLVMObject # BitReader, Core, Support
+    LLVMBitReader # Core, Support
+    LLVMCore # Support
+    LLVMSupport
+  )
+endforeach()
 
 message(STATUS "User selected librarys = ${LIBRARY_LIST}")
 message(STATUS "User selected components = ${COMPONENT_LIST}")
