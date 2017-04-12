@@ -43,9 +43,9 @@ add_definitions(
 )
 
 add_executable(simple_print_ast simple_print_ast.cpp)
-add_executable(print_function_decls print_function_decls.cpp)
+add_executable(print_local_function_decls print_local_function_decls.cpp)
 
-foreach(exec_name simple_print_ast print_function_decls)
+foreach(exec_name simple_print_ast print_local_function_decls)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     foreach(link_lib IN LISTS LIBRARY_LIST)
       target_link_libraries(${exec_name} optimized ${link_lib})
