@@ -3,6 +3,8 @@
 # Invoke cmake with -DCMAKE_PREFIX_PATH=/path/to/llvm/CMAKE_ROOT
 
 cmake_minimum_required (VERSION 3.0)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project (Examples)
 
 
@@ -18,7 +20,7 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 ############################################################
 
 set(LIBRARY_LIST clangFrontend  clangSerialization clangDriver clangParse clangRewriteFrontend clangStaticAnalyzerFrontend clangSema)
-set(LIBRARY_LIST ${LIBRARY_LIST} clangAnalysis clangEdit clangAST clangLex clangBasic clangTooling )
+set(LIBRARY_LIST ${LIBRARY_LIST} clangAnalysis clangEdit clangAST clangLex clangBasic clangTooling clangRewrite )
 set(COMPONENT_LIST mcparser bitreader support mc option)
 
 ############################################################
@@ -44,8 +46,10 @@ add_definitions(
 
 add_executable(simple_print_ast simple_print_ast.cpp)
 add_executable(print_local_function_decls print_local_function_decls.cpp)
+add_executable(trivial_function_name_rewriter trivial_function_name_rewriter.cpp)
 
-foreach(exec_name simple_print_ast print_local_function_decls)
+foreach(exec_name
+            simple_print_ast print_local_function_decls trivial_function_name_rewriter)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     foreach(link_lib IN LISTS LIBRARY_LIST)
       target_link_libraries(${exec_name} optimized ${link_lib})
