@@ -25,4 +25,7 @@ Information seems to be spread around, and Stack Overflow has some useful stuff,
 
 ### Additional info:
 * To get an AST dump, do:
+
+````
     clang++ -Xclang -ast-dump -fsyntax-only filename.cpp
+````
